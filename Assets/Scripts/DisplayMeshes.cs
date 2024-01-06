@@ -9,10 +9,6 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer))]
 public class DisplayMeshes : MonoBehaviour
 {
-    /*
-    TODO : 
-    viser un certain mesh et le faire changer de couleur
-    */
     public struct Point
     {
         public Point(int indice, Vector3 coord)

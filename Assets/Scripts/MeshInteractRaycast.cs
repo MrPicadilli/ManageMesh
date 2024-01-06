@@ -32,8 +32,8 @@ public class MeshInteractRaycast : MonoBehaviour
         {
             if (hit.transform.gameObject.GetComponent<MeshInteractRaycast>() != null)
             {
-                List<int> yo = MeshManager.instance.IsInsideTriangle(hit.collider.GetComponent<MeshFilter>().mesh, hit.point);
-                Utilitaires.InstantiateSphere(hit.point, 0.1f);
+                List<int> yo = MeshManager.instance.IsInsideTriangle(hit.transform.gameObject.GetComponent<MeshFilter>(), hit.point);
+                Utilitaires.InstantiateSphere(hit.point, 0.1f, Color.white);
                 
 
                 int[] copyTriangle = hit.collider.GetComponent<DisplayMeshes>().InterpretTriangle(yo.ToArray());

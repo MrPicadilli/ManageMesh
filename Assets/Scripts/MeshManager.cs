@@ -15,33 +15,27 @@ public class MeshManager : MonoBehaviour
         }
 
     }
-    // Start is called before the first frame update
-    void Start()
+
+
+    public List<int> IsInsideTriangle(MeshFilter meshFilter, Vector3 point)
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public List<int> IsInsideTriangle(Mesh mesh, Vector3 point)
-    {
+        Mesh mesh = meshFilter.mesh;
+        Vector3 offset = meshFilter.gameObject.transform.position;
         /*
-        Vector3 A = transform.TransformPoint(mesh.vertices[mesh.triangles[0]]);
-        Vector3 B = transform.TransformPoint(mesh.vertices[mesh.triangles[1]]);
-        Vector3 C = transform.TransformPoint(mesh.vertices[mesh.triangles[2]]);
-
+        Vector3 A = transform.TransformPoint(mesh.vertices[mesh.triangles[0]])+ meshFilter.gameObject.transform.position ;
+        Vector3 B = transform.TransformPoint(mesh.vertices[mesh.triangles[1]]) + meshFilter.gameObject.transform.position;
+        Vector3 C = transform.TransformPoint(mesh.vertices[mesh.triangles[2]]) + meshFilter.gameObject.transform.position;
+        
+        
         Utilitaires.InstantiateCube(A, 0.1f, Color.black);
         Utilitaires.InstantiateCube(B, 0.1f, Color.black);
         Utilitaires.InstantiateCube(C, 0.1f, Color.black);
         */
-        Vector3 a = mesh.vertices[mesh.triangles[0]];
-        Vector3 b = mesh.vertices[mesh.triangles[1]];
-        Vector3 c = mesh.vertices[mesh.triangles[2]];
-        
+
+        Vector3 a = mesh.vertices[mesh.triangles[0]] + offset;
+        Vector3 b = mesh.vertices[mesh.triangles[1]] + offset;
+        Vector3 c = mesh.vertices[mesh.triangles[2]] + offset;
+
 
         Utilitaires.InstantiateCube(a, 0.1f, Color.blue);
         Utilitaires.InstantiateCube(b, 0.1f, Color.blue);
@@ -67,36 +61,45 @@ public class MeshManager : MonoBehaviour
         Debug.Log("3bis : " + IsPointInTriangle3(point, a, b, c));
         Debug.Log("4bis : " + IsPointInTriangle4(point, a, b, c));
         Debug.Log("5bis : " + IsPointInTriangle5(point, a, b, c));
+        Debug.Log("5bis : " + IsPointInTriangle6(point, a, b, c));
         //*/
         int[] triangles = mesh.triangles;
         List<int> triangleFound = new List<int>();
         // Iterate over triangles (every 3 indices form a triangle)
-        
+        Utilitaires.InstantiateSphere(point, 0.1f, Color.yellow);
         for (int i = 0; i < triangles.Length; i += 3)
-        {  
-            Debug.Log(i);
+        {
             int index1 = triangles[i];
             int index2 = triangles[i + 1];
             int index3 = triangles[i + 2];
-            Vector3 vertex1 = mesh.vertices[index1];
-            Vector3 vertex2 = mesh.vertices[index2];
-            Vector3 vertex3 = mesh.vertices[index3];
+            Vector3 vertex1 = mesh.vertices[index1] + offset;
+            Vector3 vertex2 = mesh.vertices[index2] + offset;
+            Vector3 vertex3 = mesh.vertices[index3] + offset;
 
-            
+
             /*
             Vector3 vertex1 = transform.TransformPoint(mesh.vertices[index1]);
             Vector3 vertex2 = transform.TransformPoint(mesh.vertices[index2]);
             Vector3 vertex3 = transform.TransformPoint(mesh.vertices[index3]);
             */
             // Check if the hit point is inside the current triangle
-            if (IsPointInTriangle5(point, vertex1, vertex2, vertex3))
+            if (ArePointsCoplanar(point, vertex1, vertex2, vertex3))
             {
-                triangleFound.Add(index1);
-                triangleFound.Add(index2);
-                triangleFound.Add(index3);
-                Debug.Log("Point is inside the triangle!");
-                //break; // You may want to exit the loop if the point is found inside one triangle
+                if (IsPointInTriangle7(point, vertex1, vertex2, vertex3))
+                {
+                    triangleFound.Add(index1);
+                    triangleFound.Add(index2);
+                    triangleFound.Add(index3);
+                    /*
+                    Utilitaires.InstantiateCube(vertex1, 0.1f, Color.blue);
+                    Utilitaires.InstantiateCube(vertex2, 0.1f, Color.blue);
+                    Utilitaires.InstantiateCube(vertex3, 0.1f, Color.blue);
+                    */
+                    Debug.Log("Point is inside the triangle!");
+                    //break; // You may want to exit the loop if the point is found inside one triangle
+                }
             }
+
         }
         //*/
         return triangleFound;
@@ -169,21 +172,58 @@ public class MeshManager : MonoBehaviour
     }
 
     bool IsPointInTriangle5(Vector3 a, Vector3 b, Vector3 c, Vector3 p)
-{
-    Vector3 d, e;
-    double w1, w2;
-    d = b - a;
-    e = c - a;
- 
-    if (Mathf.Approximately(e.y, 0))
     {
-        e.y = 0.0001f;
+        Vector3 d, e;
+        double w1, w2;
+        d = b - a;
+        e = c - a;
+
+        if (Mathf.Approximately(e.y, 0))
+        {
+            e.y = 0.0001f;
+        }
+
+        w1 = (e.x * (a.y - p.y) + e.y * (p.x - a.x)) / (d.x * e.y - d.y * e.x);
+        w2 = (p.y - a.y - w1 * d.y) / e.y;
+        return (w1 >= 0f) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
     }
-     
-    w1 = (e.x * (a.y - p.y) + e.y * (p.x - a.x)) / (d.x * e.y - d.y * e.x);
-    w2 = (p.y - a.y - w1 * d.y) / e.y;
-    return (w1 >= 0f) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
-}
+
+    bool IsPointInTriangle6(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
+    {
+        Vector3 AB = B - A;
+        Vector3 AC = C - A;
+        Vector3 crossProduct = Vector3.Cross(AB, AC);
+        Vector3 AP = P - A;
+
+        return Vector3.Dot(Vector3.Cross(AB, AP), crossProduct) >= 0 &&
+               Vector3.Dot(Vector3.Cross(AC, AP), crossProduct) >= 0;
+    }
+
+    bool IsPointInTriangle7(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
+    {
+        Vector3 AB = B - A;
+        Vector3 AC = C - A;
+        Vector3 crossProduct = Vector3.Cross(AB, AC);
+        Vector3 AP = P - A;
+
+        float firstCondition = Mathf.Sign(Vector3.Dot(Vector3.Cross(AB, AP), crossProduct));
+        float secondCondition = Mathf.Sign(Vector3.Dot(Vector3.Cross(AC, AP), crossProduct));
+        return firstCondition != secondCondition;
+    }
+
+    bool ArePointsCoplanar(Vector3 A, Vector3 B, Vector3 C, Vector3 D)
+    {
+        // Vecteurs formés par trois points non colinéaires
+        Vector3 AB = B - A;
+        Vector3 AC = C - A;
+        Vector3 AD = D - A;
+
+        // Calcul du déterminant de la matrice formée par ces vecteurs
+        float determinant = Vector3.Dot(Vector3.Cross(AB, AC), AD);
+
+        // Les points sont coplanaires si le déterminant est proche de zéro
+        return Mathf.Approximately(determinant, 0f);
+    }
 
 
 

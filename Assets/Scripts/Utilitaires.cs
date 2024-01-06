@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Utilitaires : MonoBehaviour
 {
-    public static void InstantiateSphere(Vector3 position, float scale)
+    public static void InstantiateSphere(Vector3 position, float scale, Color color)
     {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.transform.localScale = new Vector3(scale, scale, scale);
         sphere.tag = "Destructible";
         sphere.transform.position = position;
+        sphere.GetComponent<MeshRenderer>().material.color = color;
     }
 
     public static void InstantiateCube(Vector3 position, float scale, Color color)
