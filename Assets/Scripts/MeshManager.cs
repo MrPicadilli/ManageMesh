@@ -16,34 +16,89 @@ public class MeshManager : MonoBehaviour
 
     }
 
+    Vector3 CalculateOffset(Quaternion rotationOffset, Vector3 positionOffset )
+    {
+        // Transform the position offset into the local space of the rotation
+        positionOffset = rotationOffset * positionOffset;
 
+        // Invert the rotation to compensate for local space transformation
+        //Quaternion inverseRotation = Quaternion.Inverse(rotationOffset);
+        //positionOffset = inverseRotation * positionOffset;
+
+        return positionOffset;
+    }
+
+
+    Vector3 CalculateOffset()
+    {
+        // Calculate the offset based on the reference object's local space
+        Vector3 positionOffset = transform.InverseTransformPoint(transform.position);
+        Quaternion rotationOffset = Quaternion.Inverse(transform.rotation) * transform.rotation;
+
+        // Transform the position offset into the local space of the rotation
+        positionOffset = Quaternion.Inverse(rotationOffset) * positionOffset;
+
+        return positionOffset;
+    }
     public List<int> IsInsideTriangle(MeshFilter meshFilter, Vector3 point)
     {
         Mesh mesh = meshFilter.mesh;
-        Vector3 offset = meshFilter.gameObject.transform.position;
+        Transform transformMesh = meshFilter.gameObject.transform;
+        Vector3 offset = CalculateOffset(transformMesh.rotation,transformMesh.position);
+
+        Quaternion rotationOffset = transformMesh.localRotation;
+        Quaternion rotationOffset2 = Quaternion.Euler(transformMesh.localEulerAngles);
+        Quaternion rotationOffset1 = Quaternion.Inverse(transformMesh.rotation);
+
+        
+        Vector3 positionOffset = transformMesh.position;
+        Vector3 positionOffset1 = transformMesh.InverseTransformPoint(transformMesh.position);
+
+        rotationOffset1 = Quaternion.Inverse(transformMesh.localRotation) * transform.rotation;
+        Vector3 offset1 = rotationOffset1 * positionOffset1;
+        offset = Quaternion.Inverse(transformMesh.localRotation) * positionOffset;
+
+        Debug.Log("transformMesh.localEulerAngles" + transformMesh.localEulerAngles);
+
+        Debug.Log("localRotation" + transformMesh.localRotation);
+    
+
+
+         // step 1 : offset = Quaternion.Inverse(transformMesh.localRotation) * positionOffset; -> Vector3 a = mesh.vertices[mesh.triangles[0]] + offset;
+         // step 2 : a = rotationOffset * a; -> Quaternion rotationOffset = transformMesh.localRotation;
         /*
-        Vector3 A = transform.TransformPoint(mesh.vertices[mesh.triangles[0]])+ meshFilter.gameObject.transform.position ;
-        Vector3 B = transform.TransformPoint(mesh.vertices[mesh.triangles[1]]) + meshFilter.gameObject.transform.position;
-        Vector3 C = transform.TransformPoint(mesh.vertices[mesh.triangles[2]]) + meshFilter.gameObject.transform.position;
+        Vector3 A = transform.TransformPoint(mesh.vertices[mesh.triangles[0]])+ transformMesh.position ;
+        Vector3 B = transform.TransformPoint(mesh.vertices[mesh.triangles[1]]) + transformMesh.position;
+        Vector3 C = transform.TransformPoint(mesh.vertices[mesh.triangles[2]]) + transformMesh.position;
         
         
         Utilitaires.InstantiateCube(A, 0.1f, Color.black);
         Utilitaires.InstantiateCube(B, 0.1f, Color.black);
         Utilitaires.InstantiateCube(C, 0.1f, Color.black);
         */
+        
+        Vector3 a = rotationOffset * mesh.vertices[mesh.triangles[0]] ;
+        Vector3 b = rotationOffset * mesh.vertices[mesh.triangles[1]] ;
+        Vector3 c =  rotationOffset * mesh.vertices[mesh.triangles[2]] ;
 
-        Vector3 a = mesh.vertices[mesh.triangles[0]] + offset;
-        Vector3 b = mesh.vertices[mesh.triangles[1]] + offset;
-        Vector3 c = mesh.vertices[mesh.triangles[2]] + offset;
-
-
-        Utilitaires.InstantiateCube(a, 0.1f, Color.blue);
-        Utilitaires.InstantiateCube(b, 0.1f, Color.blue);
-        Utilitaires.InstantiateCube(c, 0.1f, Color.blue);
+        Utilitaires.InstantiateCube(a, 0.1f, Color.yellow);
+        Utilitaires.InstantiateCube(b, 0.1f, Color.yellow);
+        Utilitaires.InstantiateCube(c, 0.1f, Color.yellow);
 
         Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + a);
         Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + b);
         Debug.Log("point triangle : " + mesh.triangles[2] + ", coord :" + c);
+        a += positionOffset;
+        b += positionOffset;
+        c += positionOffset;
+        Utilitaires.InstantiateCube(a, 0.1f, Color.blue);
+        Utilitaires.InstantiateCube(b, 0.1f, Color.blue);
+        Utilitaires.InstantiateCube(c, 0.1f, Color.blue);
+        
+        Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + a);
+        Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + b);
+        Debug.Log("point triangle : " + mesh.triangles[2] + ", coord :" + c);
+        
         /*
         Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + A);
         Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + B);
@@ -56,12 +111,15 @@ public class MeshManager : MonoBehaviour
         Debug.Log("4 : " + IsPointInTriangle4(point, A, B, C));
         Debug.Log("5 : " + IsPointInTriangle5(point, A, B, C));
         */
+        /*
         Debug.Log("1bis : " + IsPointInTriangle(point, a, b, c));
         Debug.Log("2bis : " + IsPointInTriangle2(point, a, b, c));
         Debug.Log("3bis : " + IsPointInTriangle3(point, a, b, c));
         Debug.Log("4bis : " + IsPointInTriangle4(point, a, b, c));
         Debug.Log("5bis : " + IsPointInTriangle5(point, a, b, c));
-        Debug.Log("5bis : " + IsPointInTriangle6(point, a, b, c));
+        Debug.Log("6bis : " + IsPointInTriangle6(point, a, b, c));
+        Debug.Log("7bis : " + IsPointInTriangle7(point, a, b, c));
+        -*
         //*/
         int[] triangles = mesh.triangles;
         List<int> triangleFound = new List<int>();
@@ -208,6 +266,7 @@ public class MeshManager : MonoBehaviour
 
         float firstCondition = Mathf.Sign(Vector3.Dot(Vector3.Cross(AB, AP), crossProduct));
         float secondCondition = Mathf.Sign(Vector3.Dot(Vector3.Cross(AC, AP), crossProduct));
+        Debug.Log("yoyo" + (firstCondition != secondCondition));
         return firstCondition != secondCondition;
     }
 
@@ -221,8 +280,11 @@ public class MeshManager : MonoBehaviour
         // Calcul du déterminant de la matrice formée par ces vecteurs
         float determinant = Vector3.Dot(Vector3.Cross(AB, AC), AD);
 
+        Debug.Log("determinant " + determinant + " like zero " + Mathf.Approximately(determinant, 0f));
+
+        return Mathf.Abs(determinant) < 0.25f;
         // Les points sont coplanaires si le déterminant est proche de zéro
-        return Mathf.Approximately(determinant, 0f);
+        //return Mathf.Approximately(determinant, 0f);
     }
 
 

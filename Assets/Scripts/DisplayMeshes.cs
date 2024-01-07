@@ -57,6 +57,9 @@ public class DisplayMeshes : MonoBehaviour
     private MeshRenderer meshRenderer;
     public Material[] MaterialsList;
     public Material materialOnSelect;
+    public bool showVertices = false;
+    public bool showSubmeshes = false;
+    public bool showTriangles = false;
     private int nbTriangle;
     // Start is called before the first frame update
     private void Awake()
@@ -64,14 +67,19 @@ public class DisplayMeshes : MonoBehaviour
         mesh = GetComponent<MeshFilter>().mesh;
         meshRenderer = GetComponent<MeshRenderer>();
         InitializeNbTriangle();
+        AdjustMaterialSize();
         InitializePoint();
         PutMaterial();
     }
     void Start()
     {
-        //ShowVertices();
-        //ShowTriangles();
-        //ShowSubmesh();
+        if(showVertices)
+            ShowVertices();
+        if(showTriangles)
+            ShowTriangles();
+        if(showSubmeshes)
+            ShowSubmesh();
+
     }
 
     private void InitializePoint()
@@ -100,23 +108,11 @@ public class DisplayMeshes : MonoBehaviour
 
         }
     }
-    private void ShowVertices()
-    {
-        Debug.Log("ShowVertices");
 
-        Debug.Log("number of vertices with repetition : " + mesh.vertexCount);
-        Debug.Log(" number of vertices with no repetition : " + pointDictionary.Count);
-        for (int i = 0; i < pointDictionary.Count; ++i)
-        {
-            Debug.Log(pointDictionary.ElementAt(i));
-        }
-
-
-    }
     private void PutMaterial()
     {
         mesh.subMeshCount = nbTriangle;
-
+        
         int[] triangle = new int[3];
         for (int i = nbTriangle - 1; i >= 0; i--)
         {
@@ -131,58 +127,33 @@ public class DisplayMeshes : MonoBehaviour
         // Recalculate bounds and normals for the mesh
         //mesh.RecalculateBounds();
         //mesh.RecalculateNormals();
-
-
     }
-    private void ShowSubmesh()
-    {
-        for (int i = 0; i < mesh.subMeshCount; i++)
-        {
-            Debug.Log("Vertex Indices for Submesh " + i + ": " + string.Join(", ", mesh.GetIndices(i)) + " color : " + 
-            meshRenderer.materials[i].name);
-        }
-    }
-    private void ShowTriangles()
-    {
-        Debug.Log("ShowTriangles");
-        Debug.Log("triangles length " + mesh.triangles.Length);
-        Debug.Log("vertices length " + mesh.vertices.Length);
-        int index;
-        for (int i = 0; i * 3 < mesh.triangles.Length; i++)
-        {
-            index = 0;
-            Debug.Log("triangle " + i + " : " + mesh.triangles[i * 3] + "," + mesh.triangles[i * 3 + 1] + "," + mesh.triangles[i * 3 + 2]);
-            foreach (var point in pointDictionary)
+
+    private void AdjustMaterialSize(){
+        if(MaterialsList.Length == nbTriangle)
+            return;
+        else if(MaterialsList.Length < nbTriangle){
+            Material[] MaterialsListTemp = new Material[nbTriangle];
+            for (int i = 0; i < MaterialsListTemp.Length; i++)
             {
-                if (point.Value.hasIndice(mesh.triangles[i * 3]))
-                    Debug.Log(index + " : " + point.Value);
-                if (point.Value.hasIndice(mesh.triangles[i * 3 + 1]))
-                    Debug.Log(index + " : " + point.Value);
-                if (point.Value.hasIndice(mesh.triangles[i * 3 + 2]))
-                    Debug.Log(index + " : " + point.Value);
-                index++;
+                MaterialsListTemp[i] = MaterialsList[i%MaterialsList.Length];
             }
-            Debug.Log("endTriangle");
+            MaterialsList = MaterialsListTemp;
+        }else{
+            Material[] MaterialsListTemp = new Material[nbTriangle];
+            for (int i = 0; i < MaterialsListTemp.Length; i++)
+            {
+                MaterialsListTemp[i] = MaterialsList[i%MaterialsList.Length];
+            }
+            MaterialsList = MaterialsListTemp;
         }
-
     }
-    private void InitializeNbTriangle()
-    {
-        int temp = 0;
-        for (int i = 0; i * 3 < mesh.triangles.Length; i++)
-        {
-            temp = i;
-        }
-        nbTriangle = temp + 1;
 
-    }
-    
-    
-    
-    
+
+
     public int[] InterpretTriangle(int[] triangle)
     {
-        Debug.Log("InterpretTriangle nb triangle : "+ triangle.Length / 3);
+        Debug.Log("InterpretTriangle nb triangle : " + triangle.Length / 3);
         bool firstBarrier = false;
         bool secondBarrier = false;
         bool thirdBarrier = false;
@@ -227,10 +198,11 @@ public class DisplayMeshes : MonoBehaviour
         return triangle;
     }
 
-//it seems that unity not manage the fact to change just one submesh among 
-//all the other one exept if you jut want  to change parameters like the color
-//so you have to put another array of material
-    private void AddColor(int[] triangleIndice){
+    //it seems that unity not manage the fact to change just one submesh among 
+    //all the other one exept if you jut want  to change parameters like the color
+    //so you have to put another array of material
+    private void AddColor(int[] triangleIndice)
+    {
         Debug.Log("AddColor");
         Material[] MaterialListTemp = meshRenderer.materials;
         foreach (int item in triangleIndice)
@@ -240,9 +212,65 @@ public class DisplayMeshes : MonoBehaviour
         meshRenderer.materials = MaterialListTemp;
     }
 
-    public void ClearColor(){
+    public void ClearColor()
+    {
         meshRenderer.materials = MaterialsList;
     }
 
+    private void ShowVertices()
+    {
+        Debug.Log("ShowVertices");
+
+        Debug.Log("number of vertices with repetition : " + mesh.vertexCount);
+        Debug.Log(" number of vertices with no repetition : " + pointDictionary.Count);
+        for (int i = 0; i < pointDictionary.Count; ++i)
+        {
+            Debug.Log(pointDictionary.ElementAt(i));
+        }
+
+
+    }
+    private void ShowSubmesh()
+    {
+        for (int i = 0; i < mesh.subMeshCount; i++)
+        {
+            Debug.Log("Vertex Indices for Submesh " + i + ": " + string.Join(", ", mesh.GetIndices(i)) + " color : " +
+            meshRenderer.materials[i].name);
+        }
+    }
+    private void ShowTriangles()
+    {
+        Debug.Log("ShowTriangles");
+        Debug.Log("triangles length " + mesh.triangles.Length);
+        Debug.Log("vertices length " + mesh.vertices.Length);
+        int index;
+        for (int i = 0; i * 3 < mesh.triangles.Length; i++)
+        {
+            index = 0;
+            Debug.Log("triangle " + i + " : " + mesh.triangles[i * 3] + "," + mesh.triangles[i * 3 + 1] + "," + mesh.triangles[i * 3 + 2]);
+            foreach (var point in pointDictionary)
+            {
+                if (point.Value.hasIndice(mesh.triangles[i * 3]))
+                    Debug.Log(index + " : " + point.Value);
+                if (point.Value.hasIndice(mesh.triangles[i * 3 + 1]))
+                    Debug.Log(index + " : " + point.Value);
+                if (point.Value.hasIndice(mesh.triangles[i * 3 + 2]))
+                    Debug.Log(index + " : " + point.Value);
+                index++;
+            }
+            Debug.Log("endTriangle");
+        }
+
+    }
+    private void InitializeNbTriangle()
+    {
+        int temp = 0;
+        for (int i = 0; i * 3 < mesh.triangles.Length; i++)
+        {
+            temp = i;
+        }
+        nbTriangle = temp + 1;
+
+    }
 
 }
