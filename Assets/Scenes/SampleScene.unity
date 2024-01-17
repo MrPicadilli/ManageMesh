@@ -766,7 +766,7 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
-  randomMaterial: 0
+  randomMaterial: 1
   triangleToShow: 0
 --- !u!114 &433600900
 MonoBehaviour:
@@ -1164,7 +1164,7 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
-  randomMaterial: 0
+  randomMaterial: 1
   triangleToShow: 0
 --- !u!1 &963194225
 GameObject:
@@ -1737,7 +1737,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 869598274}
         m_TargetAssemblyTypeName: Intersection, Assembly-CSharp
-        m_MethodName: AreSecant
+        m_MethodName: PrintSecantTriangle
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -251,12 +251,13 @@ public class DisplayMeshes : MonoBehaviour
     //it seems that unity not manage the fact to change just one submesh among 
     //all the other one exept if you jut want  to change parameters like the color
     //so you have to put another array of material
-    private void AddColor(int[] triangleIndice)
+    public void AddColor(int[] triangleIndice)
     {
         Debug.Log("AddColor");
         Material[] MaterialListTemp = meshRenderer.materials;
         foreach (int item in triangleIndice)
         {
+            Debug.Log("triangleIndice" + item);
             MaterialListTemp[item] = materialOnSelect;
         }
         meshRenderer.materials = MaterialListTemp;
