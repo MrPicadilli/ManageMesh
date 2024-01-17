@@ -60,24 +60,32 @@ public class DisplayMeshes : MonoBehaviour
     public bool showVertices = false;
     public bool showSubmeshes = false;
     public bool showTriangles = false;
+    public bool randomMaterial = false;
     private int nbTriangle;
+    public int triangleToShow = 0;
     // Start is called before the first frame update
     private void Awake()
     {
         mesh = GetComponent<MeshFilter>().mesh;
         meshRenderer = GetComponent<MeshRenderer>();
         InitializeNbTriangle();
-        AdjustMaterialSize();
-        InitializePoint();
-        PutMaterial();
+        if(randomMaterial){
+            AdjustMaterialSize(nbTriangle);
+            InitializePoint();
+            PutMaterial();
+        }else{
+            AdjustMaterialSize(2);
+            InitializePoint();
+            PutMaterialOnOneTriangle(0);
+        }
     }
     void Start()
     {
-        if(showVertices)
+        if (showVertices)
             ShowVertices();
-        if(showTriangles)
+        if (showTriangles)
             ShowTriangles();
-        if(showSubmeshes)
+        if (showSubmeshes)
             ShowSubmesh();
 
     }
@@ -112,7 +120,7 @@ public class DisplayMeshes : MonoBehaviour
     private void PutMaterial()
     {
         mesh.subMeshCount = nbTriangle;
-        
+
         int[] triangle = new int[3];
         for (int i = nbTriangle - 1; i >= 0; i--)
         {
@@ -129,21 +137,63 @@ public class DisplayMeshes : MonoBehaviour
         //mesh.RecalculateNormals();
     }
 
-    private void AdjustMaterialSize(){
-        if(MaterialsList.Length == nbTriangle)
+    private void PutMaterialOnOneTriangle(int indiceTriangle)
+    {
+        mesh.subMeshCount = 2;
+
+        int[] triangle = new int[3];
+        triangle[0] = mesh.triangles[indiceTriangle * 3];
+        triangle[1] = mesh.triangles[indiceTriangle * 3 + 1];
+        triangle[2] = mesh.triangles[indiceTriangle * 3 + 2];
+        int[] triangleRemainder = new int[mesh.triangles.Length - 3];
+        Debug.Log(mesh.triangles.Length);
+        int substract = 0;
+        for (int i = nbTriangle - 1; i >= 0; i--)
+        {
+
+            if (i == indiceTriangle)
+            {
+                substract = -3;
+            }
+            else
+            {
+                triangleRemainder[indiceTriangle * 3 - substract] = mesh.triangles[indiceTriangle * 3];
+                triangleRemainder[indiceTriangle * 3 + 1 - substract] = mesh.triangles[indiceTriangle * 3 + 1];
+                triangleRemainder[indiceTriangle * 3 + 2 - substract] = mesh.triangles[indiceTriangle * 3 + 2];
+            }
+        }
+        Debug.Log(triangle.Length);
+        Debug.Log(triangleRemainder.Length);
+        mesh.SetTriangles(triangleRemainder, 1);
+        
+
+        meshRenderer.materials = MaterialsList;
+
+
+        // Recalculate bounds and normals for the mesh
+        //mesh.RecalculateBounds();
+        //mesh.RecalculateNormals();
+    }
+
+    private void AdjustMaterialSize(int nbMaterialToAdd)
+    {
+        if (MaterialsList.Length == nbMaterialToAdd)
             return;
-        else if(MaterialsList.Length < nbTriangle){
-            Material[] MaterialsListTemp = new Material[nbTriangle];
+        else if (MaterialsList.Length < nbMaterialToAdd)
+        {
+            Material[] MaterialsListTemp = new Material[nbMaterialToAdd];
             for (int i = 0; i < MaterialsListTemp.Length; i++)
             {
-                MaterialsListTemp[i] = MaterialsList[i%MaterialsList.Length];
+                MaterialsListTemp[i] = MaterialsList[i % MaterialsList.Length];
             }
             MaterialsList = MaterialsListTemp;
-        }else{
-            Material[] MaterialsListTemp = new Material[nbTriangle];
+        }
+        else
+        {
+            Material[] MaterialsListTemp = new Material[nbMaterialToAdd];
             for (int i = 0; i < MaterialsListTemp.Length; i++)
             {
-                MaterialsListTemp[i] = MaterialsList[i%MaterialsList.Length];
+                MaterialsListTemp[i] = MaterialsList[i % MaterialsList.Length];
             }
             MaterialsList = MaterialsListTemp;
         }

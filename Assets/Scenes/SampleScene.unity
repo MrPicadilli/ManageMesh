@@ -616,6 +616,8 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
+  randomMaterial: 0
+  triangleToShow: 0
 --- !u!114 &398669284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -648,7 +650,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &433600895
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -729,7 +731,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 433600894}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.12, z: 0}
+  m_LocalPosition: {x: 0, y: 3.16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -753,7 +755,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: b3dbdf2366c248b4dbf762630947f612, type: 2}
   - {fileID: 2100000, guid: edd6ff3173ff8fa4da0c5b22249a6e65, type: 2}
   - {fileID: 2100000, guid: bf5d082521d01104e9943e0602892717, type: 2}
-  - {fileID: 2100000, guid: 93763ee875460254c82fea1ddbf81d45, type: 2}
   - {fileID: 2100000, guid: bf6638afaa9cfab419375ad18547da93, type: 2}
   - {fileID: 2100000, guid: a7a72ea9f62c5ed44b10899241ebf899, type: 2}
   - {fileID: 2100000, guid: f8ef72134b151fe4296b5977641fb79c, type: 2}
@@ -762,9 +763,11 @@ MonoBehaviour:
   - {fileID: 2100000, guid: fdd6ff5e5c4c0f34f8144c1bb4d7d8e0, type: 2}
   - {fileID: 2100000, guid: 65928ba3664c8b547bd5384e61688227, type: 2}
   materialOnSelect: {fileID: 2100000, guid: 93763ee875460254c82fea1ddbf81d45, type: 2}
-  showVertices: 1
-  showSubmeshes: 1
-  showTriangles: 1
+  showVertices: 0
+  showSubmeshes: 0
+  showTriangles: 0
+  randomMaterial: 0
+  triangleToShow: 0
 --- !u!114 &433600900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -997,7 +1000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshFilterA: {fileID: 946995477}
-  meshFilterB: {fileID: 0}
+  meshFilterB: {fileID: 433600897}
 --- !u!4 &869598275
 Transform:
   m_ObjectHideFlags: 0
@@ -1113,7 +1116,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 946995474}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.09, y: 0, z: 0}
+  m_LocalPosition: {x: -4.77, y: 3.25, z: 4.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1161,6 +1164,8 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
+  randomMaterial: 0
+  triangleToShow: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1423,6 +1428,8 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
+  randomMaterial: 0
+  triangleToShow: 0
 --- !u!114 &1128145345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1556,6 +1563,8 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
+  randomMaterial: 0
+  triangleToShow: 0
 --- !u!65 &1168158603
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1989,7 +1998,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &1963107484
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2070,7 +2079,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1963107483}
   m_LocalRotation: {x: 0.03345671, y: 0.9641618, z: -0.14839867, w: 0.21737178}
-  m_LocalPosition: {x: 4, y: 0, z: 0}
+  m_LocalPosition: {x: 4.35, y: 2.6, z: -0.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2106,6 +2115,8 @@ MonoBehaviour:
   showVertices: 0
   showSubmeshes: 0
   showTriangles: 0
+  randomMaterial: 0
+  triangleToShow: 0
 --- !u!114 &1963107489
 MonoBehaviour:
   m_ObjectHideFlags: 0

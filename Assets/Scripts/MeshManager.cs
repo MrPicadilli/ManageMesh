@@ -85,9 +85,10 @@ public class MeshManager : MonoBehaviour
         Utilitaires.InstantiateCube(b, 0.1f, Color.yellow);
         Utilitaires.InstantiateCube(c, 0.1f, Color.yellow);
 
-        Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + a);
-        Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + b);
-        Debug.Log("point triangle : " + mesh.triangles[2] + ", coord :" + c);
+        // Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + a);
+        // Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + b);
+        // Debug.Log("point triangle : " + mesh.triangles[2] + ", coord :" + c);
+
         a += positionOffset;
         b += positionOffset;
         c += positionOffset;
@@ -95,9 +96,9 @@ public class MeshManager : MonoBehaviour
         Utilitaires.InstantiateCube(b, 0.1f, Color.blue);
         Utilitaires.InstantiateCube(c, 0.1f, Color.blue);
         
-        Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + a);
-        Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + b);
-        Debug.Log("point triangle : " + mesh.triangles[2] + ", coord :" + c);
+        // Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + a);
+        // Debug.Log("point triangle : " + mesh.triangles[1] + ", coord :" + b);
+        // Debug.Log("point triangle : " + mesh.triangles[2] + ", coord :" + c);
         
         /*
         Debug.Log("point triangle : " + mesh.triangles[0] + ", coord :" + A);
@@ -130,9 +131,9 @@ public class MeshManager : MonoBehaviour
             int index1 = triangles[i];
             int index2 = triangles[i + 1];
             int index3 = triangles[i + 2];
-            Vector3 vertex1 = mesh.vertices[index1] + offset;
-            Vector3 vertex2 = mesh.vertices[index2] + offset;
-            Vector3 vertex3 = mesh.vertices[index3] + offset;
+            Vector3 vertex1 = rotationOffset * mesh.vertices[index1] + positionOffset;
+            Vector3 vertex2 = rotationOffset * mesh.vertices[index2] + positionOffset;
+            Vector3 vertex3 = rotationOffset * mesh.vertices[index3] + positionOffset;
 
 
             /*
@@ -143,7 +144,7 @@ public class MeshManager : MonoBehaviour
             // Check if the hit point is inside the current triangle
             if (ArePointsCoplanar(point, vertex1, vertex2, vertex3))
             {
-                if (IsPointInTriangle7(point, vertex1, vertex2, vertex3))
+                if (IsPointInTriangle(point, vertex1, vertex2, vertex3))
                 {
                     triangleFound.Add(index1);
                     triangleFound.Add(index2);
@@ -164,7 +165,7 @@ public class MeshManager : MonoBehaviour
     }
 
     // Check if a point is inside a triangle
-    private bool IsPointInTriangle(Vector3 point, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3)
+    public bool IsPointInTriangle(Vector3 point, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3)
     {
         // Calculate barycentric coordinates
         Vector3 v0 = vertex2 - vertex1;
@@ -185,7 +186,7 @@ public class MeshManager : MonoBehaviour
         return (u >= 0) && (v >= 0) && (u + v <= 1);
     }
 
-    private bool IsPointInTriangle2(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
+    public bool IsPointInTriangle2(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
     {
         float TriangleSurface = Mathf.Abs(Vector3.Distance(A, B) * Vector3.Distance(A, C)) / 2.0f;
         float alpha = Mathf.Abs(Vector3.Distance(P, B) * Vector3.Distance(P, B)) / (2 * TriangleSurface);
@@ -200,7 +201,7 @@ public class MeshManager : MonoBehaviour
         return alphaCondition && betaCondition && gammaCondition && sumCondition;
     }
 
-    private bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
+    public bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
     {
         Vector3 cp1 = Vector3.Cross(b - a, p1 - a);
         Vector3 cp2 = Vector3.Cross(b - a, p2 - a);
@@ -218,7 +219,7 @@ public class MeshManager : MonoBehaviour
         return false;
     }
 
-    private bool IsPointInTriangle4(Vector3 a, Vector3 b, Vector3 c, Vector3 p)
+    public bool IsPointInTriangle4(Vector3 a, Vector3 b, Vector3 c, Vector3 p)
     {
         Vector3 d, e;
         float w1, w2;
@@ -229,7 +230,7 @@ public class MeshManager : MonoBehaviour
         return (w1 >= 0.0) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
     }
 
-    bool IsPointInTriangle5(Vector3 a, Vector3 b, Vector3 c, Vector3 p)
+    public bool IsPointInTriangle5(Vector3 a, Vector3 b, Vector3 c, Vector3 p)
     {
         Vector3 d, e;
         double w1, w2;
@@ -246,7 +247,7 @@ public class MeshManager : MonoBehaviour
         return (w1 >= 0f) && (w2 >= 0.0) && ((w1 + w2) <= 1.0);
     }
 
-    bool IsPointInTriangle6(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
+    public bool IsPointInTriangle6(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
     {
         Vector3 AB = B - A;
         Vector3 AC = C - A;
@@ -257,7 +258,7 @@ public class MeshManager : MonoBehaviour
                Vector3.Dot(Vector3.Cross(AC, AP), crossProduct) >= 0;
     }
 
-    bool IsPointInTriangle7(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
+    public bool IsPointInTriangle7(Vector3 P, Vector3 A, Vector3 B, Vector3 C)
     {
         Vector3 AB = B - A;
         Vector3 AC = C - A;
@@ -270,7 +271,7 @@ public class MeshManager : MonoBehaviour
         return firstCondition != secondCondition;
     }
 
-    bool ArePointsCoplanar(Vector3 A, Vector3 B, Vector3 C, Vector3 D)
+    public bool ArePointsCoplanar(Vector3 A, Vector3 B, Vector3 C, Vector3 D)
     {
         // Vecteurs formés par trois points non colinéaires
         Vector3 AB = B - A;
@@ -282,7 +283,7 @@ public class MeshManager : MonoBehaviour
 
         Debug.Log("determinant " + determinant + " like zero " + Mathf.Approximately(determinant, 0f));
 
-        return Mathf.Abs(determinant) < 0.25f;
+        return Mathf.Abs(determinant) < 0.10f;
         // Les points sont coplanaires si le déterminant est proche de zéro
         //return Mathf.Approximately(determinant, 0f);
     }
