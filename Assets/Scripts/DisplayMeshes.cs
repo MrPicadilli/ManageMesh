@@ -253,11 +253,11 @@ public class DisplayMeshes : MonoBehaviour
     //so you have to put another array of material
     public void AddColor(int[] triangleIndice)
     {
-        Debug.Log("AddColor");
+        //Debug.Log("AddColor");
         Material[] MaterialListTemp = meshRenderer.materials;
         foreach (int item in triangleIndice)
         {
-            Debug.Log("triangleIndice" + item);
+            //Debug.Log("triangleIndice" + item);
             MaterialListTemp[item] = materialOnSelect;
         }
         meshRenderer.materials = MaterialListTemp;

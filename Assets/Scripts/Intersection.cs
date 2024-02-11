@@ -24,7 +24,7 @@ public class Triangle
 }
 public class Intersection : MonoBehaviour
 {
-
+    public float epsilon = 0.1f;
     public MeshFilter meshFilterA;
     public MeshFilter meshFilterB;
     private void Start()
@@ -84,7 +84,7 @@ public class Intersection : MonoBehaviour
         return false;
     }
 
-    private static bool EdgeIntersect1(Vector3 v1, Vector3 v2, Vector3 u1, Vector3 u2, Vector3 normal)
+    private static bool EdgeIntersect1(Vector3 v1, Vector3 v2, Vector3 u1, Vector3 u2, Vector3 normal, float epsilon = 1e-10f)
     {
         Vector3 d = u1 - v1;
         Vector3 h = Vector3.Cross(d, u2 - u1);
@@ -93,13 +93,14 @@ public class Intersection : MonoBehaviour
 
         if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
         {
+            Debug.Log(MathF.Abs(s + t - 1) );
             // Edge is intersecting, but we need to check if it's a partial intersection
-            float epsilon = 1e-7f; // Adjust as needed for numerical stability
-
+            //float epsilon = 1e-10f; // Adjust as needed for numerical stability
+            
             if (MathF.Abs(s + t - 1) < epsilon)
             {
                 // The intersection is on the edge (partial intersection)
-                return true;
+                return false;
             }
 
             // If not a partial intersection, it's a full intersection
@@ -160,7 +161,7 @@ public class Intersection : MonoBehaviour
         // B.vertex2 = rotationOffsetB * meshB.vertices[meshB.triangles[1]] + positionOffsetB;
         // B.vertex3 = rotationOffsetB * meshB.vertices[meshB.triangles[2]] + positionOffsetB;
         // AreSecant(A, B);
-        
+        Debug.Log(meshB.triangles.Length);
         for (int i = 0; i < meshA.triangles.Length; i+=3)
         {            
             // Debug.Log("i : " + i);
@@ -173,7 +174,8 @@ public class Intersection : MonoBehaviour
                 B.vertex1 = rotationOffsetB * meshB.vertices[meshB.triangles[j]] + positionOffsetB;
                 B.vertex2 = rotationOffsetB * meshB.vertices[meshB.triangles[j+1]] + positionOffsetB;
                 B.vertex3 = rotationOffsetB * meshB.vertices[meshB.triangles[j+2]] + positionOffsetB;
-                if(AreSecant(A,B)){
+                
+                if(AreSecant(A,B,epsilon)){
                     // listTriangleSecantA.Add(i);
                     listTriangleSecantA.Add(meshA.triangles[i]);
                     listTriangleSecantA.Add(meshA.triangles[i+1]);
@@ -191,7 +193,7 @@ public class Intersection : MonoBehaviour
 
     }
 
-    public static bool AreSecant(Triangle A, Triangle B)
+    public static bool AreSecant(Triangle A, Triangle B, float epsilon)
     {
 
         // Debug.Log("meshA normal :" + meshA.normals.Length);
@@ -240,15 +242,18 @@ public class Intersection : MonoBehaviour
             Debug.Log("don't overlap on axis");
             return false;
         }
+
+
         // Perform edge tests
-        if (EdgeIntersect1(A1, A2, B1, B2, n) ||
-            EdgeIntersect1(A2, A3, B1, B2, n) ||
-            EdgeIntersect1(A3, A1, B1, B2, n) ||
-            EdgeIntersect1(B1, B2, A1, A2, n) ||
-            EdgeIntersect1(B2, B3, A1, A2, n) ||
-            EdgeIntersect1(B3, B1, A1, A2, n))
+        if (EdgeIntersect1(A1, A2, B1, B2, n,epsilon) ||
+            EdgeIntersect1(A2, A3, B1, B2, n,epsilon) ||
+            EdgeIntersect1(A3, A1, B1, B2, n,epsilon) ||
+            EdgeIntersect1(B1, B2, A1, A2, n,epsilon) ||
+            EdgeIntersect1(B2, B3, A1, A2, n,epsilon) ||
+            EdgeIntersect1(B3, B1, A1, A2, n,epsilon))
         {
             Debug.Log("intersect");
+
             return true;
         }
         Debug.Log("not intersect");
